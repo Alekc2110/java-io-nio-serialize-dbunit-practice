@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <DOCTORS id='1' name="Alex" surname="Phrolov" position="therapist"/>
+    <DOCTORS id='2' name="John" surname="Smith" position="psychiatrist"/>
+    <DOCTORS id='3' name="Nick" surname="Oldrich" position="dentist"/>
+    <DOCTORS id='4' name="Peter" surname="Young" position="family_doctor"/>
+</dataset>

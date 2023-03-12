@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <DOCTORS id='1' name="Alex" surname="Phrolov" position="therapist"/>
+    <DOCTORS id='2' name="John" surname="Smith" position="psychiatrist"/>
+    <DOCTORS id='3' name="Nick" surname="Oldrich" position="dentist"/>
+    <DOCTORS id='4' name="Peter" surname="Young" position="family_doctor"/>
+    <DOCTORS id='5' name="Eva" surname="Mendez" position="therapist"/>
+    <DOCTORS id='10' name="Sam" surname="Neil" position="surgeon"/>
+
+    <PATIENTS id='1' name="Michael" surname="Kitton" age="50"/>
+    <PATIENTS id='2' name="Nina" surname="Richy" age="25"/>
+    <PATIENTS id='3' name="Peter" surname="Pan" age="19"/>
+    <PATIENTS id='4' name="Angelina" surname="Joly" age="41"/>
+    <PATIENTS id='5' name="John" surname="Doa" age="30"/>
+    <PATIENTS id='10' name="Ali" surname="Mohamad" age="45"/>
+</dataset>
