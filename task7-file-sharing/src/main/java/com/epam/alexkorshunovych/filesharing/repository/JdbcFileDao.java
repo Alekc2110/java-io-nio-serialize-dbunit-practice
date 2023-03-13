@@ -52,7 +52,7 @@ public class JdbcFileDao implements FileDao {
 
     @Override
     public void retrieveFile(String fileName, String filePath) {
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection()
         ) {
             PreparedStatement statement = connection.prepareStatement(GET_SQL);
             statement.setString(1, fileName);
