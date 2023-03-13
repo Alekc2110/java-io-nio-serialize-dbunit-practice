@@ -1,6 +1,8 @@
 package com.epam.alexkorshunovych.filesharing.repository;
 
 import com.epam.alexkorshunovych.filesharing.repository.interfaces.FileDao;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -11,14 +13,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 import static com.epam.alexkorshunovych.filesharing.repository.QuerySQL.*;
 
 @Repository
+@Slf4j
 public class JdbcFileDao implements FileDao {
 
     private static final int MAX_FILE_SIZE = 200_000_000;
@@ -29,7 +29,7 @@ public class JdbcFileDao implements FileDao {
     @Override
     public void saveFile(String fileName, String path) {
         long length = Paths.get(path).toFile().length();
-        if(length > MAX_FILE_SIZE){
+        if (length > MAX_FILE_SIZE) {
             throw new UnsupportedOperationException("Cannot save file > 200mb");
         }
         try (Connection conn = dataSource.getConnection();
@@ -45,22 +45,21 @@ public class JdbcFileDao implements FileDao {
             conn.commit();
             conn.setAutoCommit(true);
         } catch (IOException | SQLException e) {
-            System.err.println("Could not save file: " + fileName);
+            log.error("Could not save file: " + fileName);
             e.printStackTrace();
         }
     }
 
     @Override
     public void retrieveFile(String fileName, String filePath) {
-        try (Connection connection = dataSource.getConnection()
-        ) {
+        try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(GET_SQL);
             statement.setString(1, fileName);
             ResultSet resultSet = statement.executeQuery();
             InputStream inputStream = null;
             FileOutputStream outputStream = null;
             if (resultSet.next()) {
-               inputStream = resultSet.getBinaryStream("file_data");
+                inputStream = resultSet.getBinaryStream("file_data");
                 outputStream = new FileOutputStream(filePath);
                 inputStream.transferTo(outputStream);
             }
@@ -72,15 +71,29 @@ public class JdbcFileDao implements FileDao {
                 outputStream.close();
             }
         } catch (SQLException | IOException e) {
-            System.err.println("Could not retrieve file: " + fileName);
+            log.error("Could not retrieve file: " + fileName);
             e.printStackTrace();
         }
     }
 
     @Override
-    public void expireFile(int fileId) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        jdbcTemplate.update(CALL_SQL, fileId);
+    public boolean expireFile(int fileId) {
+        boolean result = false;
+        try (Connection connection = dataSource.getConnection();
+             CallableStatement stmt = connection.prepareCall(CALL_SQL)) {
+            stmt.setInt(1, fileId);
+            stmt.registerOutParameter(2, Types.BOOLEAN);
+
+            stmt.executeUpdate();
+
+            result = stmt.getBoolean(2);
+
+        } catch (SQLException e) {
+            log.error("Could not add expiration_date for row with id: " + fileId);
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
 }

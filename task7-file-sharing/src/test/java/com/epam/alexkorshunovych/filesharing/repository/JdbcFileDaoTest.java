@@ -78,10 +78,11 @@ class JdbcFileDaoTest extends DBUnitConfig {
         ITable savedTable = getITable();
         int id = (int)savedTable.getValue(0, "id");
         //when
-        subject.expireFile(id);
+        boolean result = subject.expireFile(id);
         //then
         ITable actualTable = getITable();
         LocalDate now = LocalDate.now();
+        Assertions.assertTrue(result);
         Assertions.assertEquals(now, LocalDate.parse(actualTable.getValue(0, "expiration_date").toString()));
         Assertions.assertEquals(1, actualTable.getRowCount());
     }

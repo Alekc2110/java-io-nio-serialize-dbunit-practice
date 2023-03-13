@@ -8,9 +8,13 @@ CREATE TABLE files(
     expiration_date date
 );
 
-CREATE PROCEDURE expire_file(IN file_id INTEGER)
+CREATE or REPLACE PROCEDURE expire_file(
+    IN file_id INTEGER,
+    OUT out_result BOOLEAN)
 AS $$
 BEGIN
-  UPDATE files SET expiration_date = NOW() WHERE id = file_id;
-END;
+    UPDATE files SET expiration_date = NOW() WHERE id = file_id;
+    commit;
+    out_result := true;
+END
 $$ LANGUAGE plpgsql;
